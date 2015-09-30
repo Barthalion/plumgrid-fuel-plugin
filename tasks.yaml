@@ -1,0 +1,60 @@
+- role: ['controller', 'compute', 'PG-GW', 'primary-controller']
+  stage: pre_deployment
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/pre_deployment.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 720
+
+- role: ['controller', 'compute', 'PG-GW', 'primary-controller']
+  stage: post_deployment/7000
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/pre_node.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 3000
+
+- role: ['controller', 'primary-controller']
+  stage: post_deployment/7001
+  type: shell
+  parameters:
+    cmd: bash director.sh
+    timeout: 500
+
+- role: ['compute']
+  stage: post_deployment/7002
+  type: shell
+  parameters:
+    cmd: bash edge.sh
+    timeout: 500
+
+- role: ['PG-GW']
+  stage: post_deployment/7003
+  type: shell
+  parameters:
+    cmd: bash gateway.sh
+    timeout: 500
+
+- role: ['controller', 'primary-controller']
+  stage: post_deployment/7004
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/director.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 3000
+
+- role: ['compute']
+  stage: post_deployment/7005
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/edge.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 3000
+
+- role: ['PG-GW']
+  stage: post_deployment/7006
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/gateway.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 3000

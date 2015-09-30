@@ -1,0 +1,41 @@
+attributes:
+  metadata:
+    restrictions:
+      - condition: "not (cluster:net_provider == 'neutron' and networking_parameters:segmentation_type == 'vlan')"
+        message: "Please use Neutron with VLAN segmentation, the only network type supported with PLUMgrid plugin."
+  plumgrid_package_repo:
+    value: ''
+    label: 'Repository for PLUMgrid packages'
+    description: 'The IP address for PLUMgrid LCM'
+    weight: 25
+    type: "text"
+    regex:
+      source: '^((?:\d|1?\d\d|2[0-4]\d|25[0-5])(?:\.(?:\d|1?\d\d|2[0-4]\d|25[0-5])){3})|(?:^)$'
+      error: "Invalid IP address"
+  plumgrid_license:
+    value: ""
+    label: "Enter the license for PLUMgrid"
+    description: "Enter the license that will be used by the PLUMgrid platform"
+    weight: 25
+    type: "text"
+    regex:
+      source: '\S'
+      error: "Empty value for PLUMgrid license"
+  gateway_devs:
+    value: ""
+    label: "Enter the interface(s) to be used by GW"
+    description: "Provide comma separated interfaces that will be used for external connectivity by the PLUMgrid gateway"
+    weight: 25
+    type: "text"
+    regex:
+      source: '^([a-zA-Z0-9]+,?\s*)+$'
+      error: "Values for gateway devs are not comma separated"
+  plumgrid_virtual_ip:
+    value: ''
+    label: 'PLUMgrid VIP to access the PLUMgrid console'
+    description: 'The IP address for PLUMgrid console'
+    weight: 40
+    type: "text"
+    regex:
+      source: '^((?:\d|1?\d\d|2[0-4]\d|25[0-5])(?:\.(?:\d|1?\d\d|2[0-4]\d|25[0-5])){3})|(?:^)$'
+      error: "Invalid IP address"

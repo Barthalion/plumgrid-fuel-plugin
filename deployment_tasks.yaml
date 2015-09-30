@@ -1,0 +1,12 @@
+- id: PG-GW
+  type: group
+  role: [PG-GW]
+  tasks:
+    - hiera
+    - globals
+    - netconfig
+  required_for: [deploy_end]
+  requires: [deploy_start]
+  parameters:
+    strategy:
+      type: parallel

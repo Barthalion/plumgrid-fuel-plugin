@@ -1,0 +1,39 @@
+#volumes:
+#  - id: "PG"
+#    type: "vg"
+#    min_size:
+#      generator: "calc_gb_to_mb"
+#      generator_args: [30]
+#    label: "PG"
+#    volumes:
+#        - mount: "/"
+#          type: "lv"
+#          name: "PG"
+#          file_system: "ext4"
+#          size:
+#            generator: "calc_total_vg"
+#            generator_args: ["PG"]
+
+volumes_roles_mapping:
+#  PG-Director:
+#    - {allocate_size: "min", id: "os"}
+#    - {allocate_size: "all", id: "vm"}
+#  PG-Edge:
+#    - {allocate_size: "min", id: "os"}
+#    - {allocate_size: "all", id: "vm"}
+  PG-GW:
+    - {allocate_size: "min", id: "os"}
+    - {allocate_size: "all", id: "vm"}
+#volumes_roles_mapping:
+  # Default role mapping
+#  PG-Director:
+#    - {allocate_size: "min", id: "os"}
+#    - {allocate_size: "all", id: "vm"}
+#  PG-Edge:
+#    - {allocate_size: "min", id: "os"}
+#    - {allocate_size: "all", id: "vm"}
+#  PG-GW:
+#    - {allocate_size: "min", id: "os"}
+#    - {allocate_size: "all", id: "vm"}
+# Set here new volumes for your role
+volumes: []
