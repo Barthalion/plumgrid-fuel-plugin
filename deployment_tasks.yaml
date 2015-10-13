@@ -1,6 +1,6 @@
-- id: PG-GW
+- id: PLUMgrid-Gateway
   type: group
-  role: [PG-GW]
+  role: [PLUMgrid-Gateway]
   tasks:
     - hiera
     - globals

@@ -1,21 +1,7 @@
-#PG-Director:
-#  name: "PG-Director"
-#  description: "Control Plane of PLUMgrid Network"
-#  conflicts:
-#    - controller
-#  limits:
-#    min: 1
-#PG-Edge:
-#  name: "PG-Edge"
-#  description: "Data Plane of PLUMgrid Network"
-#  conflicts:
-#    - compute
-#  limits:
-#    min: 1
-PG-GW:
-  name: "PG-GW"
-  description: "External Connectivity for PLUMgrid Network"
+PLUMgrid-Gateway:
+  name: "PLUMgrid-Gateway"
+  description: "External Connectivity using PLUMgrid"
   conflicts:
     - compute
-#  limits:
-#    min: 1
+  limits:
+    min: 1

@@ -1,4 +1,4 @@
-- role: ['controller', 'compute', 'PG-GW', 'primary-controller']
+- role: ['controller', 'compute', 'PLUMgrid-Gateway', 'primary-controller']
   stage: pre_deployment
   type: puppet
   parameters:
@@ -6,7 +6,7 @@
     puppet_modules: puppet/modules:/etc/puppet/modules
     timeout: 720
 
-- role: ['controller', 'compute', 'PG-GW', 'primary-controller']
+- role: ['controller', 'compute', 'PLUMgrid-Gateway', 'primary-controller']
   stage: post_deployment/7000
   type: puppet
   parameters:
@@ -28,7 +28,7 @@
     cmd: bash edge.sh
     timeout: 500
 
-- role: ['PG-GW']
+- role: ['PLUMgrid-Gateway']
   stage: post_deployment/7003
   type: shell
   parameters:
@@ -51,10 +51,17 @@
     puppet_modules: puppet/modules:/etc/puppet/modules
     timeout: 3000
 
-- role: ['PG-GW']
+- role: ['PLUMgrid-Gateway']
   stage: post_deployment/7006
   type: puppet
   parameters:
     puppet_manifest: puppet/manifests/gateway.pp
     puppet_modules: puppet/modules:/etc/puppet/modules
     timeout: 3000
+
+- role: ['primary-controller']
+  stage: post_deployment/7007
+  type: shell
+  parameters:
+    cmd: bash clean_neutron.sh
+    timeout: 500

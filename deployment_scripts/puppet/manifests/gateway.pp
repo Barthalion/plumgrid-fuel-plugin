@@ -19,7 +19,7 @@ class { 'plumgrid':
   license => $plumgrid_lic,
   mgmt_dev => 'br-mgmt',
   fabric_dev => $fabric_dev,
-  gateway_devs=> [$plumgrid_gw_devs],
+  gateway_devs=> split($plumgrid_gw_devs, ' '),
 }
 
 class { plumgrid::firewall:
