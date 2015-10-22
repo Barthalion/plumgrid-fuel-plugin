@@ -27,5 +27,5 @@ if [[ -f "/root/plumgrid" ]];then
   sysctl -w net.ipv4.ip_forward=1
   sed -i s/"#net.ipv4.ip_forward=1"/"net.ipv4.ip_forward=1"/g /etc/sysctl.conf
 else
-  echo "PLUMgrid plugin has been run before."
+  echo "PLUMgrid plugin has been run before, skipping."
 fi

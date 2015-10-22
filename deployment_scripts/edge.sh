@@ -45,5 +45,5 @@ if [[ -f "/root/plumgrid" ]];then
   service libvirt-bin restart
   service nova-api restart
 else
-  echo "PLUMgrid plugin has been run before."
+  echo "PLUMgrid plugin has been run before, skipping."
 fi

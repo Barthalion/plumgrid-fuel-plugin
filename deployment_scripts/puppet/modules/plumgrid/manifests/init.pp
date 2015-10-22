@@ -40,7 +40,7 @@ class plumgrid (
   $ips_awk = join($ips, '|')
 
   package { $pg_package:
-    ensure => $::plumgrid_pkg_update,
+    ensure => "latest",
   }
   if $lvm_keypath != ''  {
     ssh_authorized_key { "root@lvm":

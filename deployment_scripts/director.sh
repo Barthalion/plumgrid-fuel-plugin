@@ -68,5 +68,5 @@ if [[ -f "/root/plumgrid" ]];then
 
   service neutron-server start
 else
-  echo "PLUMgrid plugin has been run before."
+  echo "PLUMgrid plugin has been run before, skipping."
 fi

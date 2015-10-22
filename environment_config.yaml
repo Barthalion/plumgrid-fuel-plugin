@@ -19,7 +19,7 @@ attributes:
     weight: 25
     type: "text"
     regex:
-      source: '\S'
+      source: '^\S*$'
       error: "Empty value for PLUMgrid license"
   gateway_devs:
     value: ""
