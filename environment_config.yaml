@@ -12,6 +12,15 @@ attributes:
     regex:
       source: '^((?:\d|1?\d\d|2[0-4]\d|25[0-5])(?:\.(?:\d|1?\d\d|2[0-4]\d|25[0-5])){3})|(?:^)$'
       error: "Invalid IP address"
+  plumgrid_zone:
+    value: ""
+    label: "Enter the zone name for PLUMgrid LCM"
+    description: "Enter the zone name configured on the PLUMgrid LCM"
+    weight: 25
+    type: "text"
+    regex:
+      source: '^\S*$'
+      error: "Empty value for PLUMgrid zone name"
   plumgrid_license:
     value: ""
     label: "Enter the license for PLUMgrid"
@@ -34,6 +43,15 @@ attributes:
     value: ''
     label: 'PLUMgrid VIP to access the PLUMgrid console'
     description: 'The IP address for PLUMgrid console'
+    weight: 40
+    type: "text"
+    regex:
+      source: '^((?:\d|1?\d\d|2[0-4]\d|25[0-5])(?:\.(?:\d|1?\d\d|2[0-4]\d|25[0-5])){3})|(?:^)$'
+      error: "Invalid IP address"
+  plumgrid_fabric_network:
+    value: ''
+    label: 'Enter the PLUMgrid Fabric Network'
+    description: 'Enter the network that will be used by PLUMgrid Fabric (no need to enter subnet)'
     weight: 40
     type: "text"
     regex:

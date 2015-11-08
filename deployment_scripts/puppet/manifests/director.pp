@@ -12,12 +12,14 @@ $controller_address_map = get_node_to_ipaddr_map_by_network_role($controller_nod
 $controller_ipaddresses = join(hiera_array('controller_ipaddresses', values($controller_address_map)), ',')
 $mgmt_net = hiera('management_network_range')
 $fabric_dev = hiera('fabric_dev')
+$plumgrid_zone = pick($plumgrid_hash['plumgrid_zone'])
 
 class { 'plumgrid':
   plumgrid_ip => $controller_ipaddresses,
   license => $plumgrid_lic,
   mgmt_dev => 'br-mgmt',
   fabric_dev => $fabric_dev,
+  lvm_keypath => "/var/lib/plumgrid/zones/$plumgrid_zone/id_rsa.pub",
 }
 
 class { 'sal':
@@ -25,7 +27,7 @@ class { 'sal':
   virtual_ip => $plumgrid_vip,
 }
 
-class { plumgrid::firewall: 
-  source_net=> $mgmt_net, 
+class { plumgrid::firewall:
+  source_net=> $mgmt_net,
   dest_net=> $mgmt_net,
 }

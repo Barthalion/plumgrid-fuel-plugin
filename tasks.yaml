@@ -6,6 +6,14 @@
     puppet_modules: puppet/modules:/etc/puppet/modules
     timeout: 720
 
+- role: ['controller', 'primary-controller']
+  stage: post_deployment/6999
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/master.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 3000
+
 - role: ['controller', 'compute', 'PLUMgrid-Gateway', 'primary-controller']
   stage: post_deployment/7000
   type: puppet
@@ -58,10 +66,3 @@
     puppet_manifest: puppet/manifests/gateway.pp
     puppet_modules: puppet/modules:/etc/puppet/modules
     timeout: 3000
-
-- role: ['primary-controller']
-  stage: post_deployment/7007
-  type: shell
-  parameters:
-    cmd: bash clean_neutron.sh
-    timeout: 500

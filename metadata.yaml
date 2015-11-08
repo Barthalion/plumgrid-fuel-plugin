@@ -1,16 +1,16 @@
 # Plugin name
 name: plumgrid
 # Human-readable name for your plugin
-title: Fuel PLUMgrid plugin
+title: PLUMgrid plugin
 # Plugin version
 version: '1.0.0'
 # Description
-description: PLUMgrid plugin for Fuel provides the functionality to add PLUMgrid SDN for Mirantis OpenStack as network backend using Fuel Web UI in a user-friendly manner
+description: The Fuel PLUMgrid plugin allows usage of the PLUMgrid SDN for Mirantis OpenStack as the network backend
 # Required fuel version
 fuel_version: ['7.0']
 # Specify license of your plugin
 licenses: ['Apache License Version 2.0']
-authors: ['Abdullah Khan, PLUMgrid']
+authors: ['Javeria Khan, Abdullah Khan, PLUMgrid']
 homepage: 'https://github.com/stackforge/fuel-plugin-plumgrid'
 groups: ['network']
 
