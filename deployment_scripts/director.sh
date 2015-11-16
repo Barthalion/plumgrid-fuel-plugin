@@ -22,7 +22,7 @@ if [[ -f "/root/plumgrid" ]];then
   apt-get install -y iovisor-dkms
 
   fabric_ip=$(ip addr show br-mgmt | awk '$1=="inet" {print $2}' | awk -F '/' '{print $1}' | awk -F '.' '{print $4}' | head -1)
-  fabric_dev=$(brctl show br-mgmt | awk -F ' ' '{print $4}' | grep eth| awk -F '.' '{print $1}')
+  fabric_dev=$(brctl show br-mgmt | awk -F ' ' '{print $4}' | awk 'FNR == 2 {print}' | awk -F '.' '{print $1}')
   brctl delif br-aux $fabric_dev
   brctl delbr br-aux
   fabric_netmask=$(ifconfig br-mgmt | grep Mask | sed s/^.*Mask://)
