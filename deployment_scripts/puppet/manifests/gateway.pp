@@ -20,7 +20,7 @@ class { 'plumgrid':
   license => $plumgrid_lic,
   mgmt_dev => 'br-mgmt',
   fabric_dev => $fabric_dev,
-  gateway_devs=> split($plumgrid_gw_devs, ' '),
+  gateway_devs=> split($plumgrid_gw_devs, ','),
   lvm_keypath => "/var/lib/plumgrid/zones/$plumgrid_zone/id_rsa.pub",
 }
 
