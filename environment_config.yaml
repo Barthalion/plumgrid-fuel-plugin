@@ -37,8 +37,8 @@ attributes:
     weight: 25
     type: "text"
     regex:
-      source: '^([a-zA-Z0-9]+,?\s*)+$'
-      error: "Values for gateway devs are not comma separated"
+      source: *non_empty_string
+      error: "Empty value for gateway interface(s)"
   plumgrid_virtual_ip:
     value: ''
     label: 'PLUMgrid VIP to access the PLUMgrid console'
