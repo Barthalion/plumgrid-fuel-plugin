@@ -1,5 +1,5 @@
 PLUMgrid plugin for Mirantis Fuel
-#################################
+=================================
 
 License
 -------
@@ -28,43 +28,31 @@ It also implements External Networks and Port Binding Extensions.
 
 Building the plugin
 -------------------
+1. Clone the PLUMgrid Fuel plugin repository:
+   
+ ``# git clone https://github.com/plumgrid/plumgrid-fuel-plugin.git``
 
-#. Clone the PLUMgrid Fuel plugin repository:
+2. Install Fuel Plugin Builder:
 
-   .. code-block:: shell-session
+ ``pip install fuel-plugin-builder``
 
-       # git clone -b TAG https://github.com/plumgrid/plumgrid-fuel-plugin.git
+3. Navigate to the cloned PLUMgrid Fuel plugin folder and build the plugin:
 
-   Replace *``TAG``* with the current stable release tag.
+ ``cd plumgrid-fuel-plugin/``
+ 
+ ``fpb --build .``
 
-#. Install Fuel Plugin Builder:
+3. The plumgrid-<x.x.x>.rpm plugin file will be created.
 
-   .. code-block:: shell-session
+4. Copy this file to the Fuel Master node with secure copy (scp):
 
-       pip install fuel-plugin-builder
+ ``scp plumgrid-<x.x.x>.rpm root@:<the_Fuel_Master_node_IP address>:/tmp``
 
-#. Navigate to the cloned PLUMgrid Fuel plugin folder and build the plugin:
+5. On the Fuel Master node, Install the PLUMgrid plugin with:
 
-   .. code-block:: shell-session
+ ``fuel plugins --install plumgrid-<x.x.x>.rpm``
 
-       cd plumgrid-fuel-plugin/
-       fpb --build .
-
-#. The plumgrid-<x.x.x>.rpm plugin file will be created.
-
-#. Copy this file to the Fuel Master node with secure copy (scp):
-
-   .. code-block:: shell-session
-
-       scp plumgrid-<x.x.x>.rpm root@:<the_Fuel_Master_node_IP address>:/tmp
-
-#. On the Fuel Master node, Install the PLUMgrid plugin with:
-
-   .. code-block:: shell-session
-
-       fuel plugins --install plumgrid-<x.x.x>.rpm`
-
-#. The plugin is now ready for use and can be enabled on the Settings tab, PLUMgrid Plugin section
+6. The plugin is now ready for use and can be enabled on the Settings tab, PLUMgrid Plugin section
    of the Fuel web UI.
 
 Note: Contact PLUMgrid for an Installation Pack info@plumgrid.com
