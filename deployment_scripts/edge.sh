@@ -68,8 +68,6 @@ if [[ ! -f "/root/plumgrid" ]];then
   service libvirt-bin restart
   service nova-api restart
 
-  sed -i '/  virsh -c lxc: destroy plumgrid/a \ \ umount --fake /run/libvirt/lxc/plumgrid.fuse' /etc/init/plumgrid.conf
-
   touch /root/plumgrid
 
 else
