@@ -20,7 +20,7 @@ attributes:
     type: "text"
     regex:
       source: '^\S+$'
-      error: "Error: zone name cannot be empty or contain spaces"
+      error: "zone name cannot be empty or contain spaces"
   plumgrid_license:
     value: ""
     label: "Enter the license for PLUMgrid"
@@ -29,7 +29,7 @@ attributes:
     type: "text"
     regex:
       source: '^\S+$'
-      error: "Error: license field cannot be empty or contain spaces"
+      error: "license field cannot be empty or contain spaces"
   gateway_devs:
     value: ""
     label: "Enter the interface(s) to be used by GW"
