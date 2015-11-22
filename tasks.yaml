@@ -51,8 +51,15 @@
     puppet_modules: puppet/modules:/etc/puppet/modules
     timeout: 3000
 
-- role: ['compute']
+- role: ['primary-controller']
   stage: post_deployment/7005
+  type: shell
+  parameters:
+    cmd: bash post_deploy_director.sh
+    timeout: 500
+
+- role: ['compute']
+  stage: post_deployment/7006
   type: puppet
   parameters:
     puppet_manifest: puppet/manifests/edge.pp
@@ -60,14 +67,14 @@
     timeout: 3000
 
 - role: ['compute']
-  stage: post_deployment/7006
+  stage: post_deployment/7007
   type: shell
   parameters:
-    cmd: bash after_deploy_edge.sh
+    cmd: bash post_deploy_edge.sh
     timeout: 500
 
 - role: ['PLUMgrid-Gateway']
-  stage: post_deployment/7007
+  stage: post_deployment/7008
   type: puppet
   parameters:
     puppet_manifest: puppet/manifests/gateway.pp

@@ -19,8 +19,8 @@ attributes:
     weight: 25
     type: "text"
     regex:
-      source: '^\S*$'
-      error: "Empty value for PLUMgrid zone name"
+      source: '^\S+$'
+      error: "Error: zone name cannot be empty or contain spaces"
   plumgrid_license:
     value: ""
     label: "Enter the license for PLUMgrid"
@@ -28,12 +28,12 @@ attributes:
     weight: 25
     type: "text"
     regex:
-      source: '^\S*$'
-      error: "Empty value for PLUMgrid license"
+      source: '^\S+$'
+      error: "Error: license field cannot be empty or contain spaces"
   gateway_devs:
     value: ""
     label: "Enter the interface(s) to be used by GW"
-    description: "Provide comma separated interfaces that will be used for external connectivity by the PLUMgrid gateway"
+    description: "Provide comma separated interfaces that will be used for external connectivity by the PLUMgrid gateway (eg. eth3,eth4)"
     weight: 25
     type: "text"
     regex:

@@ -31,7 +31,6 @@ $plumgrid_zone = pick($plumgrid_hash['plumgrid_zone'])
 
 class { 'plumgrid':
   plumgrid_ip => $controller_ipaddresses,
-  license => $plumgrid_lic,
   mgmt_dev => 'br-mgmt',
   fabric_dev => $fabric_dev,
   lvm_keypath => "/var/lib/plumgrid/zones/$plumgrid_zone/id_rsa.pub",
