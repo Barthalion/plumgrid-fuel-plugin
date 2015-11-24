@@ -20,7 +20,7 @@ attributes:
     type: "text"
     regex:
       source: '^\S+$'
-      error: "zone name cannot be empty or contain spaces"
+      error: "Zone name cannot be empty or contain spaces"
   plumgrid_license:
     value: ""
     label: "Enter the license for PLUMgrid"
@@ -29,7 +29,7 @@ attributes:
     type: "text"
     regex:
       source: '^\S+$'
-      error: "license field cannot be empty or contain spaces"
+      error: "License field cannot be empty or contain spaces"
   gateway_devs:
     value: ""
     label: "Enter the interface(s) to be used by GW"
@@ -37,8 +37,8 @@ attributes:
     weight: 25
     type: "text"
     regex:
-      source: '^([a-zA-Z0-9]+,?\s*)+$'
-      error: "Values for gateway devs are not comma separated"
+      source: '^(\S+,?\s*)+$'
+      error: "One or more comma seperated gateway interfaces must be entered (eg. eth3,eth4)"
   plumgrid_virtual_ip:
     value: ''
     label: 'PLUMgrid VIP to access the PLUMgrid console'

@@ -56,7 +56,7 @@
   type: shell
   parameters:
     cmd: bash post_deploy_director.sh
-    timeout: 500
+    timeout: 3000
 
 - role: ['compute']
   stage: post_deployment/7006
