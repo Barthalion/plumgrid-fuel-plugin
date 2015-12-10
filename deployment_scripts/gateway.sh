@@ -18,6 +18,10 @@
 . /tmp/plumgrid_config
 
 if [[ ! -f "/root/plumgrid" ]];then
+  # Remove OVS kernel module and related packages
+  rmmod openvswitch
+  apt-get purge -y openvswitch-*
+
   curl -Lks http://$pg_repo:81/plumgrid/GPG-KEY -o /tmp/GPG-KEY
   apt-key add /tmp/GPG-KEY
   # Packages Installation
