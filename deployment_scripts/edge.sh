@@ -18,10 +18,18 @@
 . /tmp/plumgrid_config
 
 if [[ ! -f "/root/plumgrid" ]];then
+  # Remove OVS kernel module and related packages
+  rmmod openvswitch
+  apt-get purge -y openvswitch-*
+
   # Modifying nova.conf
   sed -i '/^libvirt_vif_type.*$/d' /etc/nova/nova.conf
   sed -i '/^libvirt_cpu_mode.*$/d' /etc/nova/nova.conf
   sed -i "s/^\[DEFAULT\]/\[DEFAULT\]\nlibvirt_vif_type=ethernet\nlibvirt_cpu_mode=none/" /etc/nova/nova.conf
+
+  # Enable Metadata on Computes
+  sed -i "s/^#service_metadata_proxy=false/service_metadata_proxy=True/g" /etc/nova/nova.conf
+  sed -i "s/^#metadata_proxy_shared_secret=/metadata_proxy_shared_secret=$metadata_secret/g" /etc/nova/nova.conf
 
   curl -Lks http://$pg_repo:81/plumgrid/GPG-KEY -o /tmp/GPG-KEY
   apt-key add /tmp/GPG-KEY

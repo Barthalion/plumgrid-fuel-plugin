@@ -55,7 +55,7 @@ if [[ ! -f "/root/plumgrid" ]];then
   mv /tmp/id_rsa.pub /var/lib/plumgrid/zones/$zone_name/id_rsa.pub
 
   auth=$(grep "^auth_uri*" /etc/neutron/neutron.conf | awk -F '=' '{print $2}')
-  auth_passwd="admin"
+  auth_passwd=$(grep "^admin_password*" /etc/neutron/neutron.conf | awk -F '=' '{print $2}')
 
   # Configure nova and neutron with PLUMgrid specific configs
   sed -i 's/^core_plugin.*$/core_plugin = neutron.plugins.plumgrid.plumgrid_plugin.plumgrid_plugin.NeutronPluginPLUMgridV2/' /etc/neutron/neutron.conf
@@ -87,7 +87,7 @@ if [[ ! -f "/root/plumgrid" ]];then
   sed -i '/.*\[keystone_authtoken\].*$/d' /etc/neutron/plugins/plumgrid/plumlib.ini
   sed -i '/.*admin_.*$/d' /etc/neutron/plugins/plumgrid/plumlib.ini
   sed -i '/.*auth_uri.*$/d' /etc/neutron/plugins/plumgrid/plumlib.ini
-  sed -i "\$a[keystone_authtoken]\nadmin_user = admin\nadmin_password = $auth_passwd\nauth_uri = $auth\nadmin_tenant_name = admin" /etc/neutron/plugins/plumgrid/plumlib.ini
+  sed -i "\$a[keystone_authtoken]\nadmin_user = neutron\nadmin_password = $auth_passwd\nauth_uri = $auth\nadmin_tenant_name = services" /etc/neutron/plugins/plumgrid/plumlib.ini
 
   service neutron-server start
 
