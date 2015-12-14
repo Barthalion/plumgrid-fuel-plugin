@@ -20,19 +20,14 @@
 if [[ ! -f "/root/plumgrid" ]];then
   # Remove OVS kernel module and related packages
   service neutron-server stop
-  rmmod openvswitch
-  apt-get purge -y openvswitch-*
 
   # Packages Installation
-  curl -Lks http://$pg_repo:81/plumgrid/GPG-KEY -o /tmp/GPG-KEY
-  apt-key add /tmp/GPG-KEY
   apt-get update
   apt-get install -y apparmor-utils;aa-disable /sbin/dhclient
   apt-get install -y plumgrid-puppet python-pip
   pip install networking-plumgrid
   apt-get install -y neutron-plugin-plumgrid
   apt-get install -y plumgrid-pythonlib
-  apt-get install -y iovisor-dkms
 
   fabric_ip=$(ip addr show br-mgmt | awk '$1=="inet" {print $2}' | awk -F '/' '{print $1}' | awk -F '.' '{print $4}' | head -1)
   fabric_dev=$(brctl show br-mgmt | awk -F ' ' '{print $4}' | awk 'FNR == 2 {print}' | awk -F '.' '{print $1}')
@@ -48,11 +43,6 @@ if [[ ! -f "/root/plumgrid" ]];then
   echo -e "address $fabric_net.$fabric_ip/24\nmtu 1580" >> /etc/network/interfaces.d/ifcfg-$fabric_dev
   echo "fabric_dev: $fabric_dev" >> /etc/astute.yaml
   sed -i 's/manual/static/g' /etc/network/interfaces.d/ifcfg-$fabric_dev
-
-  # Copy over the LCM key
-  curl -Lks http://$pg_repo:81/files/ssh_keys/zones/$zone_name/id_rsa.pub -o /tmp/id_rsa.pub
-  mkdir -p /var/lib/plumgrid/zones/$zone_name
-  mv /tmp/id_rsa.pub /var/lib/plumgrid/zones/$zone_name/id_rsa.pub
 
   auth=$(grep "^auth_uri*" /etc/neutron/neutron.conf | awk -F '=' '{print $2}')
   auth_passwd=$(grep "^admin_password*" /etc/neutron/neutron.conf | awk -F '=' '{print $2}')

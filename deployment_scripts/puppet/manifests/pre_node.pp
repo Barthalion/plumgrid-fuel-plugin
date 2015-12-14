@@ -38,3 +38,32 @@ file { '/tmp/plumgrid_config':
   ensure  => file,
   content => "fuel_hostname=$fuel_hostname\nhaproxy_vip=$haproxy_vip\ndirector_ip=$controller_ipaddresses\nedge_ip=$compute_ipaddresses\nmetadata_secret=$metadata\nlicense=$plumgrid_lic\nvip=$plumgrid_vip\npg_repo=$plumgrid_pkg_repo\nzone_name=$plumgrid_zone\nfabric_network=$fabric_network",
 }
+
+exec { 'ovs_rmmod':
+    command => 'rmmod openvswitch',
+    path    => '/sbin',
+    onlyif  => 'lsmod | /bin/grep openvswitch'
+}
+
+package { 'openvswitch-*':
+   ensure => absent,
+}
+
+file { ['/var/lib/plumgrid',
+        '/var/lib/plumgrid/zones',
+        "/var/lib/plumgrid/zones/$plumgrid_zone",]:
+        ensure  =>  directory,
+        mode    =>  0755,
+}->
+exec { "lcm_key":
+    command => "/usr/bin/curl -Lks http://$plumgrid_pkg_repo:81/files/ssh_keys/zones/$plumgrid_zone/id_rsa.pub -o /var/lib/plumgrid/zones/$plumgrid_zone/id_rsa.pub",
+}
+
+exec { "get_GPG":
+    command => "/usr/bin/curl -Lks http://$plumgrid_pkg_repo:81/plumgrid/GPG-KEY -o /tmp/GPG-KEY",
+}->
+exec { "apt-key":
+    path        => '/bin:/usr/bin',
+    environment => 'HOME=/root',
+    command     => 'apt-key add /tmp/GPG-KEY',
+}

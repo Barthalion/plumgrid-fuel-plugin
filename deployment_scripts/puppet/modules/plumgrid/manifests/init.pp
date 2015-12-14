@@ -19,7 +19,7 @@ class plumgrid (
   $rest_ip = '0.0.0.0',
   $rest_port = '9180',
   $mgmt_dev = 'br-mgmt',
-  $fabric_dev = 'eth2',
+  $fabric_dev = 'bond0',
   $fabric_mode = 'host',
   $gateway_devs = [],
   $demux_devs = [],
@@ -41,6 +41,9 @@ class plumgrid (
   $firstip = $ips[0]
   $ips_awk = join($ips, '|')
 
+  package { "iovisor-dkms":
+    ensure => "latest",
+  }->
   package { $pg_package:
     ensure => "latest",
   }

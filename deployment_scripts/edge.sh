@@ -18,9 +18,6 @@
 . /tmp/plumgrid_config
 
 if [[ ! -f "/root/plumgrid" ]];then
-  # Remove OVS kernel module and related packages
-  rmmod openvswitch
-  apt-get purge -y openvswitch-*
 
   # Modifying nova.conf
   sed -i '/^libvirt_vif_type.*$/d' /etc/nova/nova.conf
@@ -31,15 +28,12 @@ if [[ ! -f "/root/plumgrid" ]];then
   sed -i "s/^#service_metadata_proxy=false/service_metadata_proxy=True/g" /etc/nova/nova.conf
   sed -i "s/^#metadata_proxy_shared_secret=/metadata_proxy_shared_secret=$metadata_secret/g" /etc/nova/nova.conf
 
-  curl -Lks http://$pg_repo:81/plumgrid/GPG-KEY -o /tmp/GPG-KEY
-  apt-key add /tmp/GPG-KEY
   # Packages Installation
   apt-get update
   apt-get install -y apparmor-utils;aa-disable /sbin/dhclient
   apt-get install -y plumgrid-puppet
   apt-get install -y nova-api python-pip
   pip install python-memcached
-  apt-get install -y iovisor-dkms
 
   fabric_ip=$(ip addr show br-mgmt | awk '$1=="inet" {print $2}' | awk -F '/' '{print $1}' | awk -F '.' '{print $4}' | head -1)
   fabric_dev=$(brctl show br-mgmt | awk -F ' ' '{print $4}' | awk 'FNR == 2 {print}' | awk -F '.' '{print $1}')
@@ -55,11 +49,6 @@ if [[ ! -f "/root/plumgrid" ]];then
   echo -e "address $fabric_net.$fabric_ip/24\nmtu 1580" >> /etc/network/interfaces.d/ifcfg-$fabric_dev
   echo "fabric_dev: $fabric_dev" >> /etc/astute.yaml
   sed -i 's/manual/static/g' /etc/network/interfaces.d/ifcfg-$fabric_dev
-
-  # Copy over the LCM key
-  curl -Lks http://$pg_repo:81/files/ssh_keys/zones/$zone_name/id_rsa.pub -o /tmp/id_rsa.pub
-  mkdir -p /var/lib/plumgrid/zones/$zone_name
-  mv /tmp/id_rsa.pub /var/lib/plumgrid/zones/$zone_name/id_rsa.pub
 
   # Add this file as a part of puppet module
   cp -f  /etc/puppet/modules/mellanox_openstack/files/network.filters /etc/nova/rootwrap.d/network.filters
