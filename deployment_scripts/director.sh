@@ -21,29 +21,6 @@ if [[ ! -f "/root/plumgrid" ]];then
   # Remove OVS kernel module and related packages
   service neutron-server stop
 
-  # Packages Installation
-  apt-get update
-  apt-get install -y apparmor-utils;aa-disable /sbin/dhclient
-  apt-get install -y plumgrid-puppet python-pip
-  pip install networking-plumgrid
-  apt-get install -y neutron-plugin-plumgrid
-  apt-get install -y plumgrid-pythonlib
-
-  fabric_ip=$(ip addr show br-mgmt | awk '$1=="inet" {print $2}' | awk -F '/' '{print $1}' | awk -F '.' '{print $4}' | head -1)
-  fabric_dev=$(brctl show br-mgmt | awk -F ' ' '{print $4}' | awk 'FNR == 2 {print}' | awk -F '.' '{print $1}')
-  brctl delif br-aux $fabric_dev
-  ifconfig br-aux down
-  brctl delbr br-aux
-  rm -f /etc/network/interfaces.d/ifcfg-br-aux
-
-  fabric_netmask=$(ifconfig br-mgmt | grep Mask | sed s/^.*Mask://)
-  fabric_net=$(echo $fabric_network | cut -f2 -d: | cut -f1-3 -d.)
-  ifconfig $fabric_dev $fabric_net.$fabric_ip netmask $fabric_netmask
-  ifconfig $fabric_dev mtu 1580
-  echo -e "address $fabric_net.$fabric_ip/24\nmtu 1580" >> /etc/network/interfaces.d/ifcfg-$fabric_dev
-  echo "fabric_dev: $fabric_dev" >> /etc/astute.yaml
-  sed -i 's/manual/static/g' /etc/network/interfaces.d/ifcfg-$fabric_dev
-
   auth=$(grep "^auth_uri*" /etc/neutron/neutron.conf | awk -F '=' '{print $2}')
   auth_passwd=$(grep "^admin_password*" /etc/neutron/neutron.conf | awk -F '=' '{print $2}')
 
@@ -84,9 +61,6 @@ if [[ ! -f "/root/plumgrid" ]];then
   # Stop apache from using ports conflicting with keystone service ports
   sed -i s/".*NameVirtualHost \*:35357"/"#NameVirtualHost \*:35357"/g /etc/apache2/ports.conf
   sed -i s/".*NameVirtualHost \*:5000"/"#NameVirtualHost \*:5000"/g /etc/apache2/ports.conf
-
-  # Add fuel node fqdn to /etc/hosts
-  echo "$haproxy_vip $fuel_hostname" >> /etc/hosts
 
   touch /root/plumgrid
 
