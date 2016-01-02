@@ -36,13 +36,6 @@
     cmd: bash director.sh
     timeout: 500
 
-- role: ['PLUMgrid-Gateway']
-  stage: post_deployment/7003
-  type: shell
-  parameters:
-    cmd: bash gateway.sh
-    timeout: 500
-
 - role: ['controller', 'primary-controller']
   stage: post_deployment/7004
   type: puppet
