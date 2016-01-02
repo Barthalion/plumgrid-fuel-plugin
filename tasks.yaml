@@ -15,6 +15,13 @@
     timeout: 3000
 
 - role: ['controller', 'compute', 'PLUMgrid-Gateway', 'primary-controller']
+  stage: post_deployment/7001
+  type: shell
+  parameters:
+    cmd: bash plumgrid_fabric.sh
+    timeout: 500
+
+- role: ['controller', 'compute', 'PLUMgrid-Gateway', 'primary-controller']
   stage: post_deployment/7000
   type: puppet
   parameters:
