@@ -15,19 +15,24 @@
 
 notice('MODULAR: plumgrid/edge.pp')
 
-$metadata_hash = hiera_hash('quantum_settings', {})
-$metadata = pick($metadata_hash['metadata']['metadata_proxy_shared_secret'], 'root')
-$plumgrid_hash = hiera_hash('plumgrid', {})
+# Metadata settings
+$metadata_hash     = hiera_hash('quantum_settings', {})
+$metadata_secret   = pick($metadata_hash['metadata']['metadata_proxy_shared_secret'], 'root')
+
+# PLUMgrid settings
+$plumgrid_hash     = hiera_hash('plumgrid', {})
 $plumgrid_pkg_repo = pick($plumgrid_hash['plumgrid_package_repo'])
-$plumgrid_lic = pick($plumgrid_hash['plumgrid_license'])
-$plumgrid_vip = pick($plumgrid_hash['plumgrid_virtual_ip'])
-$network_metadata = hiera_hash('network_metadata')
-$controller_nodes = get_nodes_hash_by_roles($network_metadata, ['primary-controller', 'controller'])
+$plumgrid_lic      = pick($plumgrid_hash['plumgrid_license'])
+$plumgrid_vip      = pick($plumgrid_hash['plumgrid_virtual_ip'])
+
+# PLUMgrid Zone settings
+$network_metadata       = hiera_hash('network_metadata')
+$controller_nodes       = get_nodes_hash_by_roles($network_metadata, ['primary-controller', 'controller'])
 $controller_address_map = get_node_to_ipaddr_map_by_network_role($controller_nodes, 'mgmt/vip')
 $controller_ipaddresses = join(hiera_array('controller_ipaddresses', values($controller_address_map)), ',')
-$mgmt_net = hiera('management_network_range')
-$fabric_dev = hiera('fabric_dev')
-$plumgrid_zone = pick($plumgrid_hash['plumgrid_zone'])
+$mgmt_net               = hiera('management_network_range')
+$fabric_dev             = hiera('fabric_dev')
+$plumgrid_zone          = pick($plumgrid_hash['plumgrid_zone'])
 
 class { 'plumgrid':
   plumgrid_ip => $controller_ipaddresses,
@@ -40,4 +45,90 @@ class { 'plumgrid':
 class { plumgrid::firewall:
   source_net=> $mgmt_net,
   dest_net=> $mgmt_net,
+}
+
+file { '/etc/nova/nova.conf':
+  ensure  => present,
+  notify  => Service['nova-api']
+}
+
+file_line { 'Set libvirt vif':
+  path => '/etc/nova/nova.conf',
+  line => 'libvirt_vif_type=ethernet',
+  match => '^libvirt_vif_type.*$',
+  require => File['/etc/nova/nova.conf']
+}
+
+file_line { 'Set libvirt cpu mode':
+  path => '/etc/nova/nova.conf',
+  line => 'libvirt_cpu_mode=none',
+  match => '^libvirt_cpu_mode.*$',
+  require => File['/etc/nova/nova.conf']
+}
+
+# Enabling Metadata on Computes
+file_line { 'Enable Metadata Proxy':
+  path => '/etc/nova/nova.conf',
+  line => 'service_metadata_proxy=True',
+  match => '^#service_metadata_proxy=false',
+  require => File['/etc/nova/nova.conf']
+}
+
+file_line { 'Set Metadata Shared Secret':
+  path => '/etc/nova/nova.conf',
+  line => "metadata_proxy_shared_secret=$metadata_secret",
+  match => '^#metadata_proxy_shared_secret=',
+  require => File['/etc/nova/nova.conf']
+}
+
+file { '/etc/sudoers.d/ifc_ctl_sudoers':
+  ensure => present,
+  owner  => 'root',
+  mode   => '0644'
+}
+
+file_line { 'Set ifc_ctl_pp sudoers':
+  path    => '/etc/sudoers.d/ifc_ctl_sudoers',
+  line    => 'nova ALL=(root) NOPASSWD: /opt/pg/bin/ifc_ctl_pp *',
+  require => File['/etc/sudoers.d/ifc_ctl_sudoers'],
+  notify  => Service['nova-api']
+}
+
+service { 'libvirt-bin':
+  ensure => 'running',
+  name   => 'libvirt-bin',
+  enable => true
+}
+
+service { 'nova-api':
+  ensure => 'running',
+  name   => 'nova-api',
+  enable => true
+}
+
+file { '/etc/libvirt/qemu.conf':
+  ensure => present
+}
+
+file_line { 'Libvirt QEMU settings':
+  path => '/etc/libvirt/qemu.conf',
+  line => 'cgroup_device_acl = ["/dev/null", "/dev/full", "/dev/zero", "/dev/random", "/dev/urandom", "/dev/ptmx", "/dev/kvm", "/dev/kqemu", "/dev/rtc", "/dev/hpet", "/dev/net/tun"]',
+  require => File['/etc/libvirt/qemu.conf'],
+  notify  => [ Service['libvirt-bin'], Service['nova-api'] ]
+}
+
+# Enable packet forwarding for IPv4
+exec { 'sysctl -w net.ipv4.ip_forward=1':
+  command => '/sbin/sysctl -w net.ipv4.ip_forward=1'
+}
+
+file { '/etc/sysctl.conf':
+  ensure => present
+}
+
+file_line { 'Enable IP4 packet forwarding':
+  path    => '/etc/sysctl.conf',
+  line    => 'net.ipv4.ip_forward=1',
+  match   => '^#net.ipv4.ip_forward=1',
+  require => File['/etc/sysctl.conf']
 }

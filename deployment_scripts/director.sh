@@ -18,43 +18,11 @@
 . /tmp/plumgrid_config
 
 if [[ ! -f "/root/plumgrid" ]];then
-  # Remove OVS kernel module and related packages
   service neutron-server stop
 
-  auth=$(grep "^auth_uri*" /etc/neutron/neutron.conf | awk -F '=' '{print $2}')
-  auth_passwd=$(grep "^admin_password*" /etc/neutron/neutron.conf | awk -F '=' '{print $2}')
-
-  # Configure nova and neutron with PLUMgrid specific configs
-  sed -i 's/^core_plugin.*$/core_plugin = neutron.plugins.plumgrid.plumgrid_plugin.plumgrid_plugin.NeutronPluginPLUMgridV2/' /etc/neutron/neutron.conf
-  sed -i 's/^service_plugins.*$/service_plugins = ""/' /etc/neutron/neutron.conf
-  sed -i '/^libvirt_vif_type.*$/d' /etc/nova/nova.conf
-  sed -i '/^libvirt_cpu_mode.*$/d' /etc/nova/nova.conf
-  sed -i "s/^\[DEFAULT\]/\[DEFAULT\]\nlibvirt_vif_type=ethernet\nlibvirt_cpu_mode=none/" /etc/nova/nova.conf
-
-  # Configure neutron with the details of PLUMgrid Platform
-  sed -i 's/^.*director_server=.*$/director_server='$vip'/' /etc/neutron/plugins/plumgrid/plumgrid.ini
-  sed -i 's/^.*director_server_port.*$/director_server_port=443/' /etc/neutron/plugins/plumgrid/plumgrid.ini
-  sed -i 's/^.*username.*$/username=plumgrid/' /etc/neutron/plugins/plumgrid/plumgrid.ini
-  sed -i 's/^.*password.*$/password=plumgrid/' /etc/neutron/plugins/plumgrid/plumgrid.ini
-  sed -i 's/^.*servertimeout.*$/servertimeout=70/' /etc/neutron/plugins/plumgrid/plumgrid.ini
-  database_connection=$(cat /etc/neutron/neutron.conf | grep "^connection.*$")
-  sed -i '/^connection.*$/d' /etc/neutron/plugins/plumgrid/plumgrid.ini
-  echo $database_connection >> /etc/neutron/plugins/plumgrid/plumgrid.ini
-
-  # Configure default plugin and enable metadata support
-  echo "NEUTRON_PLUGIN_CONFIG=\"/etc/neutron/plugins/plumgrid/plumgrid.ini\"" > /etc/default/neutron-server
-  sed -i s/"enable_pg_metadata = False"/"enable_pg_metadata = True"/g /etc/neutron/plugins/plumgrid/plumlib.ini
-  sed -i "s/nova_metadata_ip = .*/nova_metadata_ip = 169.254.169.254/g" /etc/neutron/plugins/plumgrid/plumlib.ini
-  sed -i "s/nova_metadata_port = .*/nova_metadata_port = 8775/g" /etc/neutron/plugins/plumgrid/plumlib.ini
-  sed -i "s/metadata_proxy_shared_secret = .*/metadata_proxy_shared_secret = $metadata_secret/g" /etc/neutron/plugins/plumgrid/plumlib.ini
-  sed -i s/"metadata_mode = tunnel"/"metadata_mode = local"/g /etc/neutron/plugins/plumgrid/plumlib.ini
   chmod 770 /etc/sudoers.d/neutron_sudoers
   echo "neutron ALL = (ALL) NOPASSWD:ALL" > /etc/sudoers.d/neutron_sudoers
   chmod 440 /etc/sudoers.d/neutron_sudoers
-  sed -i '/.*\[keystone_authtoken\].*$/d' /etc/neutron/plugins/plumgrid/plumlib.ini
-  sed -i '/.*admin_.*$/d' /etc/neutron/plugins/plumgrid/plumlib.ini
-  sed -i '/.*auth_uri.*$/d' /etc/neutron/plugins/plumgrid/plumlib.ini
-  sed -i "\$a[keystone_authtoken]\nadmin_user = neutron\nadmin_password = $auth_passwd\nauth_uri = $auth\nadmin_tenant_name = services" /etc/neutron/plugins/plumgrid/plumlib.ini
 
   service neutron-server start
 

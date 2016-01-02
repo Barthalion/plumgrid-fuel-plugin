@@ -36,13 +36,6 @@
     cmd: bash director.sh
     timeout: 500
 
-- role: ['compute']
-  stage: post_deployment/7002
-  type: shell
-  parameters:
-    cmd: bash edge.sh
-    timeout: 500
-
 - role: ['PLUMgrid-Gateway']
   stage: post_deployment/7003
   type: shell

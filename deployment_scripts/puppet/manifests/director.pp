@@ -59,13 +59,6 @@ host { 'fuel':
     host_aliases => $fuel_hostname,
 }
 
-# Install Director Packages
-$director_packages = [ 'plumgrid-puppet', 'python-pip', 'apparmor-utils' ]
-package { $director_packages:
-    ensure => 'latest',
-    require => Exec['apt-get update'],
-}
-
 package { 'neutron-server':
   ensure => 'present',
   name   => 'neutron-server',
@@ -77,13 +70,6 @@ service { 'neutron-server':
   enable     => true,
 }
 
-exec { 'aa-disable':
-  command => 'aa-disable /sbin/dhclient',
-  path    => ['/usr/sbin', '/bin/'],
-  onlyif  => 'aa-status | grep /sbin/dhclient',
-  subscribe => Package['apparmor-utils'],
-}
-
 exec { "apt-get update":
   command => "/usr/bin/apt-get update",
 }
@@ -92,7 +78,7 @@ package { 'networking-plumgrid':
   ensure   => latest,
   provider => pip,
   notify   => Service['neutron-server'],
-  require  => [ Exec['apt-get update'], Package['python-pip'], Package['neutron-server'] ]
+  require  => [ Exec['apt-get update'], Package['neutron-server'] ]
 }
 
 class { 'plumgrid':
