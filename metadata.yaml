@@ -5,13 +5,13 @@ title: PLUMgrid plugin
 # Plugin version
 version: '1.0.0'
 # Description
-description: The Fuel PLUMgrid plugin allows usage of the PLUMgrid SDN for Mirantis OpenStack as the network backend
+description: This plugin enables the usage of PLUMgrid ONS as the network backend.
 # Required fuel version
 fuel_version: ['7.0']
 # Specify license of your plugin
 licenses: ['Apache License Version 2.0']
 authors: ['Javeria Khan, Abdullah Khan, PLUMgrid']
-homepage: 'https://github.com/stackforge/fuel-plugin-plumgrid'
+homepage: 'https://github.com/openstack/fuel-plugin-plumgrid'
 groups: ['network']
 
 # The plugin is compatible with releases in the list

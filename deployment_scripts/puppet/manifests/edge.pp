@@ -47,9 +47,14 @@ class { plumgrid::firewall:
   dest_net=> $mgmt_net,
 }
 
+package { 'nova-api':
+  ensure => 'present',
+  name   => 'nova-api',
+}
+
 file { '/etc/nova/nova.conf':
   ensure  => present,
-  notify  => Service['nova-api']
+  notify  => [ Service['nova-compute'], Service['nova-api'] ]
 }
 
 file_line { 'Set libvirt vif':
@@ -91,7 +96,7 @@ file_line { 'Set ifc_ctl_pp sudoers':
   path    => '/etc/sudoers.d/ifc_ctl_sudoers',
   line    => 'nova ALL=(root) NOPASSWD: /opt/pg/bin/ifc_ctl_pp *',
   require => File['/etc/sudoers.d/ifc_ctl_sudoers'],
-  notify  => Service['nova-api']
+  notify  => [ Service['nova-compute'], Service['nova-api'] ]
 }
 
 service { 'libvirt-bin':
@@ -106,6 +111,12 @@ service { 'nova-api':
   enable => true
 }
 
+service { 'nova-compute':
+  ensure => 'running',
+  name   => 'nova-compute',
+  enable => true
+}
+
 file { '/etc/libvirt/qemu.conf':
   ensure => present
 }
@@ -114,7 +125,7 @@ file_line { 'Libvirt QEMU settings':
   path => '/etc/libvirt/qemu.conf',
   line => 'cgroup_device_acl = ["/dev/null", "/dev/full", "/dev/zero", "/dev/random", "/dev/urandom", "/dev/ptmx", "/dev/kvm", "/dev/kqemu", "/dev/rtc", "/dev/hpet", "/dev/net/tun"]',
   require => File['/etc/libvirt/qemu.conf'],
-  notify  => [ Service['libvirt-bin'], Service['nova-api'] ]
+  notify  => [ Service['libvirt-bin'], Service['nova-compute'], Service['nova-api'] ]
 }
 
 # Enable packet forwarding for IPv4
@@ -131,4 +142,12 @@ file_line { 'Enable IP4 packet forwarding':
   line    => 'net.ipv4.ip_forward=1',
   match   => '^#net.ipv4.ip_forward=1',
   require => File['/etc/sysctl.conf']
+}
+
+Package['nova-api'] -> File['/etc/nova/rootwrap.d/network.filters'] ~> Service['nova-compute']
+
+file { '/etc/nova/rootwrap.d/network.filters':
+  ensure => present,
+  mode   => '0644',
+  source => 'puppet:///modules/plumgrid/network.filters'
 }
