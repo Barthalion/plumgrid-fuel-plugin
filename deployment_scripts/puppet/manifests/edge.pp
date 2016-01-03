@@ -151,3 +151,10 @@ file { '/etc/nova/rootwrap.d/network.filters':
   mode   => '0644',
   source => 'puppet:///modules/plumgrid/network.filters'
 }
+
+file_line { 'unmount plumgrid.fuse':
+  path    => '/etc/init/plumgrid.conf',
+  line    => '  umount --fake /run/libvirt/lxc/plumgrid.fuse',
+  after   => 'virsh -c lxc: destroy plumgrid',
+  require => Package[$plumgrid::params::plumgrid_package]
+}
