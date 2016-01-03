@@ -41,7 +41,7 @@
   stage: post_deployment/7005
   type: shell
   parameters:
-    cmd: bash post_deploy_director.sh
+    cmd: bash post_pg_license.sh
     timeout: 3000
 
 - role: ['compute']
