@@ -1,62 +1,6 @@
-- role: ['controller', 'compute', 'PLUMgrid-Gateway', 'primary-controller']
+- role: '*'
   stage: pre_deployment
-  type: puppet
-  parameters:
-    puppet_manifest: puppet/manifests/pre_deployment.pp
-    puppet_modules: puppet/modules:/etc/puppet/modules
-    timeout: 720
-
-- role: ['controller', 'primary-controller']
-  stage: post_deployment/6999
-  type: puppet
-  parameters:
-    puppet_manifest: puppet/manifests/tools.pp
-    puppet_modules: puppet/modules:/etc/puppet/modules
-    timeout: 3000
-
-- role: ['controller', 'compute', 'PLUMgrid-Gateway', 'primary-controller']
-  stage: post_deployment/7001
   type: shell
   parameters:
-    cmd: bash plumgrid_fabric.sh
-    timeout: 500
-
-- role: ['controller', 'compute', 'PLUMgrid-Gateway', 'primary-controller']
-  stage: post_deployment/7000
-  type: puppet
-  parameters:
-    puppet_manifest: puppet/manifests/pg_common.pp
-    puppet_modules: puppet/modules:/etc/puppet/modules
-    timeout: 3000
-
-- role: ['controller', 'primary-controller']
-  stage: post_deployment/7004
-  type: puppet
-  parameters:
-    puppet_manifest: puppet/manifests/director.pp
-    puppet_modules: puppet/modules:/etc/puppet/modules
-    timeout: 3000
-
-- role: ['primary-controller']
-  stage: post_deployment/7005
-  type: shell
-  parameters:
-    cmd: bash post_pg_license.sh
-    timeout: 3000
-
-- role: ['compute']
-  stage: post_deployment/7006
-  type: puppet
-  parameters:
-    puppet_manifest: puppet/manifests/edge.pp
-    puppet_modules: puppet/modules:/etc/puppet/modules
-    timeout: 3000
-
-- role: ['PLUMgrid-Gateway']
-  stage: post_deployment/7008
-  type: puppet
-  parameters:
-    puppet_manifest: puppet/manifests/gateway.pp
-    puppet_modules: puppet/modules:/etc/puppet/modules
-    timeout: 3000
-
+    cmd: echo OK
+    timeout: 30
