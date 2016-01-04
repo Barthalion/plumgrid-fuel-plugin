@@ -42,8 +42,7 @@ if [[ -f "/etc/network/interfaces.d/ifcfg-$fabric_dev" ]];then
   rm /etc/network/interfaces.d/ifcfg-$fabric_dev
 fi
 
-echo -e "address $fabric_net.$fabric_ip/24\nmtu 1580" >> /etc/network/interfaces.d/ifcfg-$fabric_dev
-sed -i 's/manual/static/g' /etc/network/interfaces.d/ifcfg-$fabric_dev
+echo -e "auto $fabric_dev\niface $fabric_dev inet static\nddress $fabric_net.$fabric_ip/24\nmtu 1580" >> /etc/network/interfaces.d/ifcfg-$fabric_dev
 
 grep -q -F "fabric_dev: $fabric_dev" /etc/astute.yaml || echo "fabric_dev: $fabric_dev" >> /etc/astute.yaml
                                                                                                                            
