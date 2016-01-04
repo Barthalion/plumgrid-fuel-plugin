@@ -18,7 +18,6 @@ notice('MODULAR: plumgrid/director.pp')
 # Fuel settings
 $fuel_hash              = hiera_hash('public_ssl', {})
 $fuel_hostname          = pick($fuel_hash['hostname'])
-$haproxy_vip            = pick($network_metadata['vips']['public']['ipaddr'])
 
 # PLUMgrid settings
 $plumgrid_hash          = hiera_hash('plumgrid', {})
@@ -29,6 +28,7 @@ $plumgrid_zone          = pick($plumgrid_hash['plumgrid_zone'])
 
 # PLUMgrid Zone settings
 $network_metadata       = hiera_hash('network_metadata')
+$haproxy_vip            = pick($network_metadata['vips']['public']['ipaddr'])
 $controller_nodes       = get_nodes_hash_by_roles($network_metadata, ['primary-controller', 'controller'])
 $controller_address_map = get_node_to_ipaddr_map_by_network_role($controller_nodes, 'mgmt/vip')
 $controller_ipaddresses = join(hiera_array('controller_ipaddresses', values($controller_address_map)), ',')
