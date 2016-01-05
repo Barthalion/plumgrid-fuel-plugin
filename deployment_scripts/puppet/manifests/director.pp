@@ -25,6 +25,8 @@ $plumgrid_pkg_repo      = pick($plumgrid_hash['plumgrid_package_repo'])
 $plumgrid_lic           = pick($plumgrid_hash['plumgrid_license'])
 $plumgrid_vip           = pick($plumgrid_hash['plumgrid_virtual_ip'])
 $plumgrid_zone          = pick($plumgrid_hash['plumgrid_zone'])
+$plumgrid_username      = pick($plumgrid_hash['plumgrid_username'])
+$plumgrid_password      = pick($plumgrid_hash['plumgrid_password'])
 
 # PLUMgrid Zone settings
 $network_metadata       = hiera_hash('network_metadata')
@@ -40,11 +42,6 @@ $neutron_config         = hiera_hash('quantum_settings', {})
 $metadata_secret        = pick($neutron_config['metadata']['metadata_proxy_shared_secret'], 'root')
 $service_endpoint       = hiera('service_endpoint')
 
-# Neutron Keystone settings
-$neutron_user_password  = $neutron_config['keystone']['admin_password']
-$keystone_user          = pick($neutron_config['keystone']['admin_user'], 'neutron')
-$keystone_tenant        = pick($neutron_config['keystone']['admin_tenant'], 'services')
-
 # Neutron DB settings
 $neutron_db_password    = $neutron_config['database']['passwd']
 $neutron_db_user        = pick($neutron_config['database']['user'], 'neutron')
@@ -53,32 +50,14 @@ $neutron_db_host        = pick($neutron_config['database']['host'], hiera('datab
 
 $neutron_db_uri = "mysql://${neutron_db_user}:${neutron_db_password}@${neutron_db_host}/${neutron_db_name}?&read_timeout=60"
 
+# OpenStack Access settings
+$access_hash              = hiera_hash('access', {})
+$admin_password           = pick($access_hash['password'])
+
 # Add fuel node fqdn to /etc/hosts
 host { 'fuel':
     ip => $haproxy_vip,
     host_aliases => $fuel_hostname,
-}
-
-package { 'neutron-server':
-  ensure => 'present',
-  name   => 'neutron-server',
-}
-
-service { 'neutron-server':
-  ensure     => 'running',
-  name       => 'neutron-server',
-  enable     => true,
-}
-
-exec { "apt-get update":
-  command => "/usr/bin/apt-get update",
-}
-
-package { 'networking-plumgrid':
-  ensure   => latest,
-  provider => pip,
-  notify   => Service['neutron-server'],
-  require  => [ Exec['apt-get update'], Package['neutron-server'] ]
 }
 
 class { 'plumgrid':
@@ -98,38 +77,41 @@ class { plumgrid::firewall:
   dest_net   => $mgmt_net,
 }
 
-# Setup PLUMgrid Configurations
+# Setup Neutron PLUMgrid Configurations
 
-file_line { '/etc/default/neutron-server':
-  path    => '/etc/default/neutron-server',
-  line    => 'NEUTRON_PLUGIN_CONFIG="/etc/neutron/plugins/plumgrid/plumgrid.ini"',
-  match   => '^NEUTRON_PLUGIN_CONFIG=(.*)$',
-  require => [ Package['neutron-server'], Package['neutron-plugin-plumgrid'] ],
-  notify  => Service['neutron-server'],
+package { 'neutron-server':
+  ensure => 'present',
+  name   => 'neutron-server',
+}
+
+service { 'neutron-server':
+  ensure     => 'running',
+  name       => 'neutron-server',
+  enable     => true,
 }
 
 file { '/etc/neutron/neutron.conf':
   ensure => present,
-  notify => Service['neutron-server']
+  notify => Service['neutron-server'],
 }
 
 file_line { 'Enable PLUMgrid core plugin':
   path => '/etc/neutron/neutron.conf',
   line => 'core_plugin=neutron.plugins.plumgrid.plumgrid_plugin.plumgrid_plugin.NeutronPluginPLUMgridV2',
   match => '^core_plugin.*$',
-  require => File['/etc/neutron/neutron.conf']
+  require => File['/etc/neutron/neutron.conf'],
 }
 
 file_line { 'Disable service plugins':
   path => '/etc/neutron/neutron.conf',
   line => 'service_plugins = ""',
   match => '^service_plugins.*$',
-  require => File['/etc/neutron/neutron.conf']
+  require => File['/etc/neutron/neutron.conf'],
 }
 
 file { '/etc/nova/nova.conf':
   ensure => present,
-  notify => Service['neutron-server']
+  notify => Service['neutron-server'],
 }
 
 file_line { 'Set libvirt vif':
@@ -147,7 +129,7 @@ file_line { 'Set libvirt cpu mode':
 }
 
 file { '/etc/apache2/ports.conf':
-  ensure => present
+  ensure => present,
 }
 
 file_line { 'ensure no port conflict between apache and keystone':
@@ -166,48 +148,19 @@ file_line { 'ensure no port conflict between apache-keystone':
 
 # Setting PLUMgrid Config Files
 
-Neutron_plugin_plumgrid<||> ~> Service['neutron-server']
-Neutron_plumlib_plumgrid<||> ~> Service['neutron-server']
-
-ensure_resource('file', '/etc/neutron/plugins/plumgrid', {
-  ensure => directory,
-  owner  => 'root',
-  group  => 'neutron',
-  mode   => '0640'}
-)
-
-Package['neutron-server'] -> Neutron_plugin_plumgrid<||>
-Package['neutron-server'] -> Neutron_plumlib_plumgrid<||>
-
-package { 'neutron-plugin-plumgrid':
-  name   => 'neutron-plugin-plumgrid',
-  ensure => latest,
-  require => Exec['apt-get update']
-}
-
-package { 'neutron-plumlib-plumgrid':
-  name   => 'plumgrid-pythonlib',
-  ensure => latest,
-  require => Exec['apt-get update']
-}
-
-neutron_plugin_plumgrid {
-   'PLUMgridDirector/director_server':      value => $plumgrid_vip;
-   'PLUMgridDirector/director_server_port': value => '443';
-   'PLUMgridDirector/username':             value => 'plumgrid';
-   'PLUMgridDirector/password':             value => 'plumgrid', secret =>true;
-   'PLUMgridDirector/servertimeout':        value => '70';
-   'database/connection':                   value => $neutron_db_uri;
-}
-
-neutron_plumlib_plumgrid {
-  'keystone_authtoken/admin_user' :                value => $keystone_user;
-  'keystone_authtoken/admin_password':             value => $neutron_user_password, secret =>true;
-  'keystone_authtoken/auth_uri':                   value => "http://${service_endpoint}:35357/v2.0";
-  'keystone_authtoken/admin_tenant_name':          value => $keystone_tenant;
-  'PLUMgridMetadata/enable_pg_metadata' :          value => 'True';
-  'PLUMgridMetadata/metadata_mode':                value => 'local';
-  'PLUMgridMetadata/nova_metadata_ip':             value => '169.254.169.254';
-  'PLUMgridMetadata/nova_metadata_port':           value => '8775';
-  'PLUMgridMetadata/metadata_proxy_shared_secret': value => $metadata_secret;
+class { '::neutron::plugins::plumgrid':
+  director_server              => $plumgrid_vip,
+  username                     => $plumgrid_username,
+  password                     => $plumgrid_password,
+  admin_password               => $admin_password,
+  controller_priv_host         => $service_endpoint,
+  connection                   => $neutron_db_uri,
+  nova_metadata_ip             => '169.254.169.254',
+  nova_metadata_port           => '8775',
+  metadata_proxy_shared_secret => $metadata_secret,
+}->
+package { 'networking-plumgrid':
+  ensure   => present,
+  provider => 'pip',
+  notify   => Service["$::neutron::params::server_service"],
 }

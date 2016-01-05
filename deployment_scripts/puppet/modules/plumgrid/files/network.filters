@@ -41,6 +41,7 @@ ivs-ctl: CommandFilter, ivs-ctl, root
 
 # nova/virt/libvirt/vif.py: 'ifc_ctl', ...
 ifc_ctl: CommandFilter, /opt/pg/bin/ifc_ctl, root
+ifc_ctl_pp: CommandFilter, /opt/pg/bin/ifc_ctl_pp, root
 
 # nova/virt/libvirt/vif.py: 'mm-ctl', ...
 mm-ctl: CommandFilter, mm-ctl, root

@@ -3,6 +3,24 @@ attributes:
     restrictions:
       - condition: "not (cluster:net_provider == 'neutron' and networking_parameters:segmentation_type == 'vlan')"
         message: "Please use Neutron with VLAN segmentation, the only network type supported with PLUMgrid plugin."
+  plumgrid_username:
+    value: "plumgrid"
+    label: "Enter the username for PLUMgrid"
+    description: "Enter the default username for accessing PLUMgrid"
+    weight: 25
+    type: "text"
+    regex:
+      source: '^\S+$'
+      error: "username cannot be empty or contain spaces"
+  plumgrid_password:
+    value: "plumgrid"
+    label: "Enter the password for PLUMgrid"
+    description: "Enter the default password for accessing PLUMgrid"
+    weight: 25
+    type: "password"
+    regex:
+      source: '^\S+$'
+      error: "password cannot be empty or contain spaces"
   plumgrid_package_repo:
     value: ''
     label: 'Repository for PLUMgrid packages'

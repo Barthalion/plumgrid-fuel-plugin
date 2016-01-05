@@ -86,19 +86,6 @@ file_line { 'Set Metadata Shared Secret':
   require => File['/etc/nova/nova.conf']
 }
 
-file { '/etc/sudoers.d/ifc_ctl_sudoers':
-  ensure => present,
-  owner  => 'root',
-  mode   => '0644'
-}
-
-file_line { 'Set ifc_ctl_pp sudoers':
-  path    => '/etc/sudoers.d/ifc_ctl_sudoers',
-  line    => 'nova ALL=(root) NOPASSWD: /opt/pg/bin/ifc_ctl_pp *',
-  require => File['/etc/sudoers.d/ifc_ctl_sudoers'],
-  notify  => [ Service['nova-compute'], Service['nova-api'] ]
-}
-
 service { 'libvirt-bin':
   ensure => 'running',
   name   => 'libvirt-bin',
