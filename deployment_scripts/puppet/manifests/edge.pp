@@ -48,8 +48,13 @@ class { plumgrid::firewall:
 }
 
 package { 'nova-api':
-  ensure => 'present',
+  ensure => present,
   name   => 'nova-api',
+}
+
+package { 'nova-compute':
+  ensure => present,
+  name   => 'nova-compute',
 }
 
 file { '/etc/nova/nova.conf':
@@ -87,32 +92,34 @@ file_line { 'Set Metadata Shared Secret':
 }
 
 service { 'libvirt-bin':
-  ensure => 'running',
+  ensure => running,
   name   => 'libvirt-bin',
-  enable => true
+  enable => true,
 }
 
 service { 'nova-api':
-  ensure => 'running',
-  name   => 'nova-api',
-  enable => true
+  ensure  => running,
+  name    => 'nova-api',
+  require => Package['nova-api'],
+  enable => true,
 }
 
 service { 'nova-compute':
-  ensure => 'running',
+  ensure => running,
   name   => 'nova-compute',
-  enable => true
+  require => Package['nova-compute'],
+  enable => true,
 }
 
 file { '/etc/libvirt/qemu.conf':
-  ensure => present
+  ensure => present,
+  notify => Service['libvirt-bin'],
 }
 
 file_line { 'Libvirt QEMU settings':
   path => '/etc/libvirt/qemu.conf',
   line => 'cgroup_device_acl = ["/dev/null", "/dev/full", "/dev/zero", "/dev/random", "/dev/urandom", "/dev/ptmx", "/dev/kvm", "/dev/kqemu", "/dev/rtc", "/dev/hpet", "/dev/net/tun"]',
   require => File['/etc/libvirt/qemu.conf'],
-  notify  => [ Service['libvirt-bin'], Service['nova-compute'], Service['nova-api'] ]
 }
 
 # Enable packet forwarding for IPv4

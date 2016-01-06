@@ -27,7 +27,7 @@ if [[ ! -f "/root/cleanup_os" ]];then
   neutron net-delete net04_ext
   admin_id=`keystone tenant-list|grep admin|awk -F '|' '{ print $2 }'`
   neutron security-group-delete --tenant-id $admin_id
-
+  neutron security-group-delete default
   touch /root/cleanup_os
 
 else
