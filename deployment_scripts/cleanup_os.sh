@@ -15,7 +15,7 @@
 
 #!/bin/bash
 
-if [[ -f "/root/plumgrid" ]];then
+if [[ ! -f "/root/cleanup_os" ]];then
   source /root/openrc
   router_id=`neutron router-list | grep "network_id" | awk '{print $2}'`
   neutron router-gateway-clear $router_id
@@ -27,6 +27,9 @@ if [[ -f "/root/plumgrid" ]];then
   neutron net-delete net04_ext
   admin_id=`keystone tenant-list|grep admin|awk -F '|' '{ print $2 }'`
   neutron security-group-delete --tenant-id $admin_id
+
+  touch /root/cleanup_os
+
 else
-  echo "PLUMgrid plugin has been run before, skipping."
+  echo "Cleanup already preformed before, skipping."
 fi
