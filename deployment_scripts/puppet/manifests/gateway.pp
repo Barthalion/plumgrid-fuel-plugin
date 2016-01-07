@@ -17,7 +17,6 @@ notice('MODULAR: plumgrid/gateway.pp')
 
 # PLUMgrid settings
 $plumgrid_hash          = hiera_hash('plumgrid', {})
-$plumgrid_lic           = pick($plumgrid_hash['plumgrid_license'])
 $plumgrid_gw_devs       = pick($plumgrid_hash['gateway_devs'])
 
 # PLUMgrid Zone settings
@@ -31,7 +30,6 @@ $plumgrid_zone          = pick($plumgrid_hash['plumgrid_zone'])
 
 class { 'plumgrid':
   plumgrid_ip  => $controller_ipaddresses,
-  license      => $plumgrid_lic,
   mgmt_dev     => 'br-mgmt',
   fabric_dev   => $fabric_dev,
   gateway_devs => split($plumgrid_gw_devs, ','),

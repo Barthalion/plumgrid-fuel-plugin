@@ -16,7 +16,7 @@ attributes:
     value: "plumgrid"
     label: "Enter the password for PLUMgrid"
     description: "Enter the default password for accessing PLUMgrid"
-    weight: 25
+    weight: 26
     type: "password"
     regex:
       source: '^\S+$'
@@ -25,7 +25,7 @@ attributes:
     value: ''
     label: 'Repository for PLUMgrid packages'
     description: 'The IP address for PLUMgrid LCM'
-    weight: 25
+    weight: 45
     type: "text"
     regex:
       source: '^((?:\d|1?\d\d|2[0-4]\d|25[0-5])(?:\.(?:\d|1?\d\d|2[0-4]\d|25[0-5])){3})|(?:^)$'
@@ -34,7 +34,7 @@ attributes:
     value: ""
     label: "Enter the zone name for PLUMgrid LCM"
     description: "Enter the zone name configured on the PLUMgrid LCM"
-    weight: 25
+    weight: 55
     type: "text"
     regex:
       source: '^\S+$'
@@ -43,7 +43,7 @@ attributes:
     value: ""
     label: "Enter the license for PLUMgrid"
     description: "Enter the license that will be used by the PLUMgrid platform"
-    weight: 25
+    weight: 65
     type: "text"
     regex:
       source: '^\S+$'
@@ -52,7 +52,7 @@ attributes:
     value: ""
     label: "Enter the interface(s) to be used by GW"
     description: "Provide comma separated interfaces that will be used for external connectivity by the PLUMgrid gateway (eg. eth3,eth4)"
-    weight: 25
+    weight: 75
     type: "text"
     regex:
       source: '^(\S+,?\s*)+$'
@@ -61,7 +61,7 @@ attributes:
     value: ''
     label: 'PLUMgrid VIP to access the PLUMgrid console'
     description: 'The IP address for PLUMgrid console'
-    weight: 40
+    weight: 30
     type: "text"
     regex:
       source: '^((?:\d|1?\d\d|2[0-4]\d|25[0-5])(?:\.(?:\d|1?\d\d|2[0-4]\d|25[0-5])){3})|(?:^)$'
@@ -70,7 +70,7 @@ attributes:
     value: ''
     label: 'Enter the PLUMgrid Fabric Network'
     description: 'Enter the network that will be used by PLUMgrid Fabric (no need to enter subnet)'
-    weight: 40
+    weight: 32
     type: "text"
     regex:
       source: '^((?:\d|1?\d\d|2[0-4]\d|25[0-5])(?:\.(?:\d|1?\d\d|2[0-4]\d|25[0-5])){3})|(?:^)$'

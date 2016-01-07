@@ -160,7 +160,7 @@ class { '::neutron::plugins::plumgrid':
   metadata_proxy_shared_secret => $metadata_secret,
 }->
 package { 'networking-plumgrid':
-  ensure   => present,
+  ensure   => latest,
   provider => 'pip',
   notify   => Service["$::neutron::params::server_service"],
 }

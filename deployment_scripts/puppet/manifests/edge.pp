@@ -22,7 +22,6 @@ $metadata_secret   = pick($metadata_hash['metadata']['metadata_proxy_shared_secr
 # PLUMgrid settings
 $plumgrid_hash     = hiera_hash('plumgrid', {})
 $plumgrid_pkg_repo = pick($plumgrid_hash['plumgrid_package_repo'])
-$plumgrid_lic      = pick($plumgrid_hash['plumgrid_license'])
 $plumgrid_vip      = pick($plumgrid_hash['plumgrid_virtual_ip'])
 
 # PLUMgrid Zone settings
@@ -36,7 +35,6 @@ $plumgrid_zone          = pick($plumgrid_hash['plumgrid_zone'])
 
 class { 'plumgrid':
   plumgrid_ip => $controller_ipaddresses,
-  license => $plumgrid_lic,
   mgmt_dev => 'br-mgmt',
   fabric_dev => $fabric_dev,
   lvm_keypath => "/var/lib/plumgrid/zones/$plumgrid_zone/id_rsa.pub",
