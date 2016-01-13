@@ -27,6 +27,7 @@ $plumgrid_vip           = pick($plumgrid_hash['plumgrid_virtual_ip'])
 $plumgrid_zone          = pick($plumgrid_hash['plumgrid_zone'])
 $plumgrid_username      = pick($plumgrid_hash['plumgrid_username'])
 $plumgrid_password      = pick($plumgrid_hash['plumgrid_password'])
+$networking_pg_version  = pick($plumgrid_hash['networking_pg_version'], '2015.1.1.1')
 
 # PLUMgrid Zone settings
 $network_metadata       = hiera_hash('network_metadata')
@@ -160,7 +161,7 @@ class { '::neutron::plugins::plumgrid':
   metadata_proxy_shared_secret => $metadata_secret,
 }->
 package { 'networking-plumgrid':
-  ensure   => latest,
+  ensure   => $networking_pg_version,
   provider => 'pip',
   notify   => Service["$::neutron::params::server_service"],
 }
