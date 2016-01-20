@@ -63,7 +63,7 @@
   requires: [post_deployment_start, setup-director]
   type: puppet
   parameters:
-    puppet_manifest: puppet/manifests/director.pp
+    puppet_manifest: puppet/manifests/director_fixes.pp
     puppet_modules: puppet/modules:/etc/puppet/modules
     timeout: 3000
 
