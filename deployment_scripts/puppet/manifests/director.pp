@@ -129,24 +129,6 @@ file_line { 'Set libvirt cpu mode':
   require => File['/etc/nova/nova.conf']
 }
 
-file { '/etc/apache2/ports.conf':
-  ensure => present,
-}
-
-file_line { 'ensure no port conflict between apache and keystone':
-  path    => '/etc/apache2/ports.conf',
-  line   => 'NameVirtualHost *:35357',
-  ensure  => 'absent',
-  require => File['/etc/apache2/ports.conf']
-}
-
-file_line { 'ensure no port conflict between apache-keystone':
-  path    => '/etc/apache2/ports.conf',
-  line   => 'NameVirtualHost *:5000',
-  ensure  => 'absent',
-  require => File['/etc/apache2/ports.conf']
-}
-
 # Setting PLUMgrid Config Files
 
 class { '::neutron::plugins::plumgrid':

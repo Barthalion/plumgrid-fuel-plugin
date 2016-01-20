@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-notice('MODULAR: plumgrid/master.pp')
+notice('MODULAR: plumgrid/tools.pp')
 
 # PLUMgrid settings
 $metadata_hash          = hiera_hash('quantum_settings', {})

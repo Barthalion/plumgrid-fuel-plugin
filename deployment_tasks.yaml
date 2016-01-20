@@ -49,8 +49,18 @@
 
 - id: setup-director
   role: ['controller', 'primary-controller']
-  required_for: [post_deployment_end, post_pg_license]
+  required_for: [post_deployment_end, director-fixes]
   requires: [post_deployment_start, pg_fabric]
+  type: puppet
+  parameters:
+    puppet_manifest: puppet/manifests/director.pp
+    puppet_modules: puppet/modules:/etc/puppet/modules
+    timeout: 3000
+
+- id: director-fixes
+  role: ['controller', 'primary-controller']
+  required_for: [post_deployment_end, post_pg_license]
+  requires: [post_deployment_start, setup-director]
   type: puppet
   parameters:
     puppet_manifest: puppet/manifests/director.pp
@@ -60,7 +70,7 @@
 - id: post_pg_license
   role: ['primary-controller']
   required_for: [post_deployment_end, setup-edge, setup-gateway]
-  requires: [post_deployment_start, setup-director]
+  requires: [post_deployment_start, director-fixes]
   type: shell
   parameters:
     cmd: bash post_pg_license.sh
