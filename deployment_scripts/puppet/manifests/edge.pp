@@ -144,9 +144,16 @@ file { '/etc/nova/rootwrap.d/network.filters':
   source => 'puppet:///modules/plumgrid/network.filters'
 }
 
-file_line { 'unmount plumgrid.fuse':
+file_line { 'unmount plumgrid.fuse post-stop':
   path    => '/etc/init/plumgrid.conf',
   line    => '  umount --fake /run/libvirt/lxc/plumgrid.fuse',
   after   => 'virsh -c lxc: destroy plumgrid',
+  require => Package[$plumgrid::params::plumgrid_package]
+}
+
+file_line { 'unmount plumgrid.fuse pre-start':
+  path    => '/etc/init/plumgrid.conf',
+  line    => '  umount --fake /run/libvirt/lxc/plumgrid.fuse',
+  after   => '/opt/pg/scripts/systemd_pre_start.sh',
   require => Package[$plumgrid::params::plumgrid_package]
 }
